@@ -28,8 +28,6 @@
     </ItemGroup>
 
     <Target Name="BuildClient" AfterTargets="Publish">
-        <Exec WorkingDirectory="clientapp" Command="npm ci" />
-        <Exec WorkingDirectory="clientapp" Command="npm run build" />
 
         <ItemGroup>
             <DistFiles Include="clientapp/dist/clientapp/browser/**" />
