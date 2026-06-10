@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(PATH='/c/Program Files/dotnet:__TRACKED_VAR__' dotnet run --launch-profile http)",
+      "Bash(npm start *)",
+      "Bash(curl -s -o /dev/null -w \"API: %{http_code}\\\\n\" http://localhost:5130/openapi/v1.json)",
+      "Bash(curl -s -o /dev/null -w \"NG: %{http_code}\\\\n\" http://127.0.0.1:4200/)",
+      "Bash(curl -s -X POST http://127.0.0.1:4200/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"admin\",\"password\":\"ChangeMe!\"}')",
+      "Bash(/c/Windows/System32/tasklist.exe //FI \"IMAGENAME eq Betonator.exe\")",
+      "Bash(/c/Windows/System32/tasklist.exe //FI \"IMAGENAME eq node.exe\")",
+      "Bash(/c/Windows/System32/taskkill.exe //PID 17008 //F)",
+      "Bash(cd \"C:/Users/Marcin/RiderProjects/Betonator\" && rm -f betonator.db-shm betonator.db-wal && ls *.db* 2>&1 || echo \"no db files\")",
+      "Bash(PATH='/c/Program Files/dotnet:__TRACKED_VAR__' dotnet build)",
+      "Bash(PATH='/c/Program Files/dotnet:__TRACKED_VAR__' dotnet run --no-build --launch-profile http)"
+    ]
+  }
+}

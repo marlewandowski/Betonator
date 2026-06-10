@@ -1,0 +1,101 @@
+@Betonator_HostAddress = http://localhost:5130
+@token = paste-token-from-login-below
+
+### Login (bootstrap admin)
+POST {{Betonator_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "ChangeMe!"
+}
+
+### Me
+GET {{Betonator_HostAddress}}/api/me
+Authorization: Bearer {{token}}
+
+### Create user (admin only)
+POST {{Betonator_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "friend",
+  "password": "hunter2",
+  "email": "f@example.com",
+  "isAdmin": false
+}
+
+### List users (admin only)
+GET {{Betonator_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+
+### Create competition (admin only)
+POST {{Betonator_HostAddress}}/api/competitions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Test Cup 2026",
+  "isInternational": true
+}
+
+### List competitions
+GET {{Betonator_HostAddress}}/api/competitions
+Authorization: Bearer {{token}}
+
+### Add participant (admin only)
+POST {{Betonator_HostAddress}}/api/competitions/1/participants
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "isActive": true
+}
+
+### Create match (admin only)
+POST {{Betonator_HostAddress}}/api/matches
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "competitionId": 1,
+  "gameTime": "2026-06-14T18:00:00Z",
+  "team1": "Poland",
+  "team2": "Germany",
+  "description": "Group A"
+}
+
+### List matches with my bet inlined
+GET {{Betonator_HostAddress}}/api/competitions/1/matches
+Authorization: Bearer {{token}}
+
+### Place / update bet
+PUT {{Betonator_HostAddress}}/api/matches/1/bet
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "goal1": 2,
+  "goal2": 1
+}
+
+### Admin sets result (recomputes points)
+POST {{Betonator_HostAddress}}/api/matches/1/result
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "goal1": 2,
+  "goal2": 1,
+  "resultDescription": "Last-minute winner"
+}
+
+### Standings
+GET {{Betonator_HostAddress}}/api/competitions/1/standings
+Authorization: Bearer {{token}}
+
+### My bets in a competition
+GET {{Betonator_HostAddress}}/api/me/bets?competitionId=1
+Authorization: Bearer {{token}}

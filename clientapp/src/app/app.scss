@@ -1,0 +1,30 @@
+.brand { font-weight: 600; margin-right: 1.5rem; }
+.spacer { flex: 1 1 auto; }
+.user { margin-right: 0.5rem; opacity: 0.85; }
+mat-toolbar a.active { background: rgba(255, 255, 255, 0.12); }
+main { padding: 1rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+.custom-toolbar {
+  background-color: #007bff;
+  color: white;
+}
+
+:host {
+  display: block;
+  min-height: 100vh;
+
+  background-image: url('/assets/backgrounds/wc2026.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.main {
+  min-height: calc(100vh - 64px);
+  overflow: visible;
+}
+
+body {
+  color: white;
+}

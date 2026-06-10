@@ -1,0 +1,17 @@
+@if (auth.isAuthenticated()) {
+  <mat-toolbar class="custom-toolbar">
+    <span class="brand">Betonator</span>
+    <a mat-button routerLink="/competitions" routerLinkActive="active">Rozgrywki</a>
+    <a mat-button routerLink="/me/matches" routerLinkActive="active">Dzisiaj</a>
+    <a mat-button routerLink="/me/bets" routerLinkActive="active">Moje typy</a>
+    @if (auth.isAdmin()) {
+      <a mat-button routerLink="/admin/users" routerLinkActive="active">Użytkownicy</a>
+    }
+    <span class="spacer"></span>
+    <span class="user">{{ auth.user()?.username }}</span>
+    <button mat-button (click)="logout()">Wyloguj</button>
+  </mat-toolbar>
+}
+<main>
+  <router-outlet />
+</main>
