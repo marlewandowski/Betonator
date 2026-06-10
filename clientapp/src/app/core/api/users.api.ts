@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UserDto } from '../models';
+import {environment} from '../../../environments/environment';
 
 export interface CreateUserBody {
   username: string;
@@ -21,12 +22,12 @@ export class UsersApi {
   private http = inject(HttpClient);
 
   list() {
-    return this.http.get<UserDto[]>('/api/users');
+    return this.http.get<UserDto[]>(`${environment.apiUrl}/api/users`);
   }
   create(body: CreateUserBody) {
-    return this.http.post<UserDto>('/api/users', body);
+    return this.http.post<UserDto>(`${environment.apiUrl}/api/users`, body);
   }
   update(id: number, body: UpdateUserBody) {
-    return this.http.put<UserDto>(`/api/users/${id}`, body);
+    return this.http.put<UserDto>(`${environment.apiUrl}/api/users/${id}`, body);
   }
 }

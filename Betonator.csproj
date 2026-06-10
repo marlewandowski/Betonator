@@ -27,4 +27,17 @@
       <Folder Include="clientapp\src\app\common\" />
     </ItemGroup>
 
+    <Target Name="BuildClient" AfterTargets="Publish">
+        <Exec WorkingDirectory="clientapp" Command="npm ci" />
+        <Exec WorkingDirectory="clientapp" Command="npm run build" />
+
+        <ItemGroup>
+            <DistFiles Include="clientapp/dist/clientapp/browser/**" />
+        </ItemGroup>
+
+        <Copy SourceFiles="@(DistFiles)"
+              DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
+              SkipUnchangedFiles="true" />
+    </Target>
+    
 </Project>

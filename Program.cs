@@ -32,6 +32,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseBetonatorAuth();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 var api = app.MapGroup("/api");
 api.MapAuthEndpoints();
 api.MapUserEndpoints();
@@ -41,3 +44,5 @@ api.MapMatchEndpoints();
 api.MapBetEndpoints();
 
 app.Run();
+
+app.MapFallbackToFile("index.html");

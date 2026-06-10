@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BetDto, MatchDto, MatchStage } from '../models';
+import {environment} from '../../../environments/environment';
 
 export interface MatchPayload {
   gameTime: string;
@@ -29,21 +30,21 @@ export class MatchesApi {
   private http = inject(HttpClient);
 
   listForCompetition(competitionId: number) {
-    return this.http.get<MatchDto[]>(`/api/competitions/${competitionId}/matches`);
+    return this.http.get<MatchDto[]>(`${environment.apiUrl}/api/competitions/${competitionId}/matches`);
   }
   create(body: CreateMatchBody) {
-    return this.http.post<MatchDto>('/api/matches', body);
+    return this.http.post<MatchDto>(`${environment.apiUrl}/api/matches`, body);
   }
   update(id: number, body: MatchPayload) {
-    return this.http.put<MatchDto>(`/api/matches/${id}`, body);
+    return this.http.put<MatchDto>(`${environment.apiUrl}/api/matches/${id}`, body);
   }
   setResult(id: number, body: SetResultBody) {
-    return this.http.post<MatchDto>(`/api/matches/${id}/result`, body);
+    return this.http.post<MatchDto>(`${environment.apiUrl}/api/matches/${id}/result`, body);
   }
   clearResult(id: number) {
-    return this.http.delete<void>(`/api/matches/${id}/result`);
+    return this.http.delete<void>(`${environment.apiUrl}/api/matches/${id}/result`);
   }
   bets(id: number) {
-    return this.http.get<BetDto[]>(`/api/matches/${id}/bets`);
+    return this.http.get<BetDto[]>(`${environment.apiUrl}/api/matches/${id}/bets`);
   }
 }
