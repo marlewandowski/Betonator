@@ -8,8 +8,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddOpenApi();
 
+var dataDir = "/app/data";
+Directory.CreateDirectory(dataDir);
+
+var dbPath = Path.Combine(dataDir, "betonator.db");
+var seedPath = Path.Combine(AppContext.BaseDirectory, "Data/seed.db");
+
+if (!File.Exists(dbPath))
+{
+    File.Copy(seedPath, dbPath);
+}
+
 builder.Services.AddDbContext<BetonatorDbContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+    opt.UseSqlite($"Data Source={dbPath}"));
 
 builder.Services.AddBetonatorAuth(builder.Configuration);
 builder.Services.AddSingleton<IScoringRule, ClassicPolishTyperRule>();

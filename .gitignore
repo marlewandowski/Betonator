@@ -15,7 +15,6 @@ obj/
 .vscode/
 
 # SQLite databases
-*.db
 *.db-shm
 *.db-wal
 *.sqlite
