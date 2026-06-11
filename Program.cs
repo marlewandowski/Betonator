@@ -12,10 +12,13 @@ var dataDir = "/app/data";
 Directory.CreateDirectory(dataDir);
 
 var dbPath = Path.Combine(dataDir, "betonator.db");
-var seedPath = "Data/seed.db";
+var seedPath = Path.Combine(AppContext.BaseDirectory, "Data", "seed.db");
 
 if (!File.Exists(dbPath))
 {
+    if (!File.Exists(seedPath))
+        throw new Exception($"Seed DB not found at {seedPath}");
+
     File.Copy(seedPath, dbPath);
 }
 
