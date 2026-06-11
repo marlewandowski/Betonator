@@ -43,6 +43,7 @@ api.MapGroupEndpoints();
 api.MapMatchEndpoints();
 api.MapBetEndpoints();
 
+app.MapFallbackToFile("index.html");
+
 app.Run();
 
-app.MapFallbackToFile("index.html");
