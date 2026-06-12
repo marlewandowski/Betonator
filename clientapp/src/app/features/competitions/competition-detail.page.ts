@@ -795,7 +795,7 @@ export class CompetitionDetailPage implements OnInit, AfterViewInit {
   }
 
   canViewBets(r: MatchRow): boolean {
-    return r.match.myBet !== null;
+    return r.match.myBet !== null || this.toLocalInput(new Date(Date.now())) > this.toLocalInput(new Date(r.match.gameTime)) ;
   }
 
   isBetReadOnly(r: MatchRow): boolean {
