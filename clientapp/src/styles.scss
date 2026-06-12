@@ -36,6 +36,10 @@ body {
   margin: 0;
   height: 100%;
 }
+
+* {
+  box-sizing: border-box;
+}
 /* You can add global styles to this file, and also import other style files */
 
 .header-wrapper {
@@ -59,4 +63,106 @@ body {
 .mat-mdc-table-container {
   border-radius: 6px;
   overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .header-wrapper {
+    padding: 0.75rem;
+  }
+
+  .header {
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .header h1 {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.2;
+  }
+
+  .header .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mat-mdc-table.full,
+  .mat-mdc-table.mobile-cards {
+    display: block;
+    width: 100%;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .mat-mdc-table.full thead,
+  .mat-mdc-table.mobile-cards thead,
+  .mat-mdc-table.full .mat-mdc-header-row,
+  .mat-mdc-table.mobile-cards .mat-mdc-header-row {
+    display: none;
+  }
+
+  .mat-mdc-table.full tbody,
+  .mat-mdc-table.mobile-cards tbody,
+  .mat-mdc-table.full .mat-mdc-row,
+  .mat-mdc-table.mobile-cards .mat-mdc-row {
+    display: block;
+  }
+
+  .mat-mdc-table.full .mat-mdc-row,
+  .mat-mdc-table.mobile-cards .mat-mdc-row {
+    height: auto;
+    margin-bottom: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 38%) minmax(0, 1fr);
+    align-items: center;
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #eeeeee;
+    word-break: break-word;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell:last-child,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell:last-child {
+    border-bottom: 0;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell::before,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell::before {
+    content: attr(data-label);
+    padding-right: 0.75rem;
+    color: #666;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell:empty,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell:empty {
+    display: none;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell .mat-mdc-button,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell .mat-mdc-button {
+    justify-self: start;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell.mat-column-actions,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell.mat-column-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .mat-mdc-table.full .mat-mdc-cell.mat-column-actions::before,
+  .mat-mdc-table.mobile-cards .mat-mdc-cell.mat-column-actions::before {
+    flex: 0 0 min(7.5rem, 38%);
+  }
 }

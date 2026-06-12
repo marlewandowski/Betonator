@@ -44,17 +44,17 @@ import { ParticipantDto, UserDto } from '../../core/models';
       <table mat-table [dataSource]="rows()" class="mat-elevation-z1 full">
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Gracz</th>
-          <td mat-cell *matCellDef="let p">{{ p.username }}</td>
+          <td mat-cell *matCellDef="let p" data-label="Gracz">{{ p.username }}</td>
         </ng-container>
         <ng-container matColumnDef="active">
           <th mat-header-cell *matHeaderCellDef>Aktywny</th>
-          <td mat-cell *matCellDef="let p">
+          <td mat-cell *matCellDef="let p" data-label="Aktywny">
             <mat-checkbox [checked]="p.isActive" (change)="toggle(p, $event.checked)"></mat-checkbox>
           </td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let p">
+          <td mat-cell *matCellDef="let p" data-label="Akcje">
             <button mat-button color="warn" (click)="remove(p)">Usuń</button>
           </td>
         </ng-container>
@@ -65,8 +65,11 @@ import { ParticipantDto, UserDto } from '../../core/models';
   `,
   styles: [`
     .header { display: flex; align-items: center; justify-content: space-between; }
-    .add { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem; }
+    .add { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
     .full { width: 100%; }
+    @media (max-width: 700px) {
+      .add mat-form-field { width: 100%; }
+    }
   `],
 })
 export class ParticipantsPage implements OnInit {

@@ -36,15 +36,15 @@ import { BetDto, CompetitionDto } from '../../core/models';
       <table mat-table [dataSource]="bets()" class="mat-elevation-z1 full">
         <ng-container matColumnDef="placedAt">
           <th mat-header-cell *matHeaderCellDef>Dodano</th>
-          <td mat-cell *matCellDef="let b">{{ b.updatedAt | date:'short' }}</td>
+          <td mat-cell *matCellDef="let b" data-label="Dodano">{{ b.updatedAt | date:'short' }}</td>
         </ng-container>
         <ng-container matColumnDef="bet">
           <th mat-header-cell *matHeaderCellDef>Typ</th>
-          <td mat-cell *matCellDef="let b">{{ b.betGoal1 }} : {{ b.betGoal2 }} ({{ b.outcome }})</td>
+          <td mat-cell *matCellDef="let b" data-label="Typ">{{ b.betGoal1 }} : {{ b.betGoal2 }} ({{ b.outcome }})</td>
         </ng-container>
         <ng-container matColumnDef="points">
           <th mat-header-cell *matHeaderCellDef>Punkty</th>
-          <td mat-cell *matCellDef="let b">{{ b.points ?? '—' }}</td>
+          <td mat-cell *matCellDef="let b" data-label="Punkty">{{ b.points ?? '—' }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="cols"></tr>
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>

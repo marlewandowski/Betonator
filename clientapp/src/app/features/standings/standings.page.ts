@@ -23,27 +23,27 @@ import { StandingsRowDto } from '../../core/models';
       <table mat-table [dataSource]="rows()" class="mat-elevation-z1 full">
         <ng-container matColumnDef="rank">
           <th mat-header-cell *matHeaderCellDef>#</th>
-          <td mat-cell *matCellDef="let r; let i = index">{{ i + 1 }}</td>
+          <td mat-cell *matCellDef="let r; let i = index" data-label="#">{{ i + 1 }}</td>
         </ng-container>
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Gracz</th>
-          <td mat-cell *matCellDef="let r">{{ r.username }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Gracz">{{ r.username }}</td>
         </ng-container>
         <ng-container matColumnDef="points">
           <th mat-header-cell *matHeaderCellDef>Punkty</th>
-          <td mat-cell *matCellDef="let r"><strong>{{ r.points }}</strong></td>
+          <td mat-cell *matCellDef="let r" data-label="Punkty"><strong>{{ r.points }}</strong></td>
         </ng-container>
         <ng-container matColumnDef="bets">
           <th mat-header-cell *matHeaderCellDef>Typy</th>
-          <td mat-cell *matCellDef="let r">{{ r.betsPlaced }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Typy">{{ r.betsPlaced }}</td>
         </ng-container>
         <ng-container matColumnDef="exact">
           <th mat-header-cell *matHeaderCellDef>Dokładne</th>
-          <td mat-cell *matCellDef="let r">{{ r.exactScores }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Dokładne">{{ r.exactScores }}</td>
         </ng-container>
         <ng-container matColumnDef="correct">
           <th mat-header-cell *matHeaderCellDef>Trafiony wynik</th>
-          <td mat-cell *matCellDef="let r">{{ r.correctOutcomes }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Trafiony wynik">{{ r.correctOutcomes }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="cols"></tr>
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>

@@ -23,23 +23,23 @@ import { UserFormDialog } from './user-form.dialog';
       <table mat-table [dataSource]="rows()" class="mat-elevation-z1 full">
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Nazwa użytkownika</th>
-          <td mat-cell *matCellDef="let u">{{ u.username }}</td>
+          <td mat-cell *matCellDef="let u" data-label="Nazwa">{{ u.username }}</td>
         </ng-container>
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let u">{{ u.email || '—' }}</td>
+          <td mat-cell *matCellDef="let u" data-label="Email">{{ u.email || '—' }}</td>
         </ng-container>
         <ng-container matColumnDef="role">
           <th mat-header-cell *matHeaderCellDef>Rola</th>
-          <td mat-cell *matCellDef="let u">{{ u.isAdmin ? 'Admin' : 'Użytkownik' }}</td>
+          <td mat-cell *matCellDef="let u" data-label="Rola">{{ u.isAdmin ? 'Admin' : 'Użytkownik' }}</td>
         </ng-container>
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let u">{{ u.isDisabled ? 'Wyłączony' : 'Aktywny' }}</td>
+          <td mat-cell *matCellDef="let u" data-label="Status">{{ u.isDisabled ? 'Wyłączony' : 'Aktywny' }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let u"><button mat-button (click)="edit(u)">Edytuj</button></td>
+          <td mat-cell *matCellDef="let u" data-label="Akcje"><button mat-button (click)="edit(u)">Edytuj</button></td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="cols"></tr>
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
@@ -47,7 +47,7 @@ import { UserFormDialog } from './user-form.dialog';
     }
   `,
   styles: [`
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .full { width: 100%; }
   `],
 })

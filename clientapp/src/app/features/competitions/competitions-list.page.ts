@@ -33,27 +33,27 @@ import { CompetitionFormDialog } from './competition-form.dialog';
       <table mat-table [dataSource]="rows()" class="mat-elevation-z1 full">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Nazwa</th>
-          <td mat-cell *matCellDef="let r"><a [routerLink]="['/competitions', r.id]">{{ r.name }}</a></td>
+          <td mat-cell *matCellDef="let r" data-label="Nazwa"><a [routerLink]="['/competitions', r.id]">{{ r.name }}</a></td>
         </ng-container>
         <ng-container matColumnDef="type">
           <th mat-header-cell *matHeaderCellDef>Typ</th>
-          <td mat-cell *matCellDef="let r">{{ r.isInternational ? 'Reprezentacje' : 'Kluby' }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Typ">{{ r.isInternational ? 'Reprezentacje' : 'Kluby' }}</td>
         </ng-container>
         <ng-container matColumnDef="matches">
           <th mat-header-cell *matHeaderCellDef>Mecze</th>
-          <td mat-cell *matCellDef="let r">{{ r.matchCount }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Mecze">{{ r.matchCount }}</td>
         </ng-container>
         <ng-container matColumnDef="participants">
           <th mat-header-cell *matHeaderCellDef>Gracze</th>
-          <td mat-cell *matCellDef="let r">{{ r.participantCount }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Gracze">{{ r.participantCount }}</td>
         </ng-container>
         <ng-container matColumnDef="created">
           <th mat-header-cell *matHeaderCellDef>Utworzono</th>
-          <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'mediumDate' }}</td>
+          <td mat-cell *matCellDef="let r" data-label="Utworzono">{{ r.createdAt | date:'mediumDate' }}</td>
         </ng-container>
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let r">
+          <td mat-cell *matCellDef="let r" data-label="Akcje">
             <a mat-button [routerLink]="['/competitions', r.id, 'standings']">Tabela</a>
             @if (auth.isAdmin()) {
               <a mat-button [routerLink]="['/competitions', r.id, 'participants']">Gracze</a>
@@ -67,7 +67,7 @@ import { CompetitionFormDialog } from './competition-form.dialog';
     }
   `,
   styles: [`
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .full { width: 100%; }
   `],
 })
