@@ -104,7 +104,8 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
 
     @if (bracketStages().length > 0) {
       <h2>Drabinka</h2>
-      <div class="bracket-wrap" #bracketWrap>
+      <mat-card class="bracket-card">
+        <div class="bracket-wrap" #bracketWrap>
         <svg class="bracket-lines" [attr.width]="bracketSize().w" [attr.height]="bracketSize().h">
           @for (l of bracketLines(); track $index) {
             <path [attr.d]="lineD(l)" />
@@ -114,6 +115,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
           @for (col of bracketStages(); track col.stage) {
             <div class="bracket-col">
               <div class="col-title">{{ stageLabel(col.stage) }}</div>
+              <div class="bracket-matches">
               @for (r of col.rows; track r.match.id) {
                 <div class="match-card-bracket"
                      [class.can-view-bets]="canViewBets(r)"
@@ -180,10 +182,12 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
                   }
                 </div>
               }
+              </div>
             </div>
           }
         </div>
       </div>
+      </mat-card>
     }
 
     @if (standaloneRows().length > 0) {
@@ -342,11 +346,13 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     .standings th, .standings td { padding: 0.25rem 0.4rem; text-align: center; border-bottom: 1px solid #eee; }
     .standings th:first-child, .standings td:first-child { text-align: left; }
 
-    .bracket-wrap { overflow-x: auto; padding-bottom: 1rem; position: relative; }
+    .bracket-card { container-type: inline-size; padding: 0.5rem; background-color: rgba(255, 255, 255, 0.9); }
+    .bracket-wrap { overflow-x: auto; padding-bottom: 1rem; position: relative; background-color: rgba(255, 255, 255, 0.9); }
     .bracket-lines { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 0; }
     .bracket-lines path { stroke: #90a4ae; stroke-width: 1.5; fill: none; }
     .bracket { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(var(--cols), minmax(220px, 1fr)); gap: 2rem; min-width: 100%; }
-    .bracket-col { display: flex; flex-direction: column; justify-content: space-around; gap: 1rem; }
+    .bracket-col { display: flex; flex-direction: column; gap: 1rem; }
+    .bracket-matches { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 1rem; }
     .col-title { font-weight: 600; text-align: center; opacity: 0.8; margin-bottom: 0.25rem; }
     .match-card {
       border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.6rem; background: #fafafa;
@@ -710,7 +716,7 @@ export class CompetitionDetailPage implements OnInit, AfterViewInit {
     const wrapRect = root.getBoundingClientRect();
     this.bracketSize.set({ w: bracketEl.scrollWidth, h: bracketEl.scrollHeight });
 
-    const cards = root.querySelectorAll<HTMLElement>('.match-card');
+    const cards = root.querySelectorAll<HTMLElement>('.match-card-bracket');
     const byId = new Map<number, DOMRect>();
     cards.forEach(c => {
       const id = c.dataset['id'];

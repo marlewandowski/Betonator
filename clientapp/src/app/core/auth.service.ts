@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { LoginResponse, UserDto } from './models';
+import {environment} from '../../environments/environment';
 
 const TOKEN_KEY = 'betonator.token';
 const USER_KEY = 'betonator.user';
@@ -18,7 +19,7 @@ export class AuthService {
   readonly isAdmin = computed(() => this._user()?.isAdmin ?? false);
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/auth/login', { username, password }).pipe(
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/api/auth/login`, { username, password }).pipe(
       tap((res) => {
         localStorage.setItem(TOKEN_KEY, res.token);
         localStorage.setItem(USER_KEY, JSON.stringify(res.user));
