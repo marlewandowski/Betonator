@@ -132,8 +132,8 @@ public static class CompetitionEndpoints
                 {
                     var pts = r.Bets.Sum(b => b.Points ?? 0);
                     var betsPlaced = r.Bets.Count;
-                    var exact = r.Bets.Count(b => b.Points == 3);
-                    var correctOutcome = r.Bets.Count(b => b.Points >= 1);
+                    var exact = r.Bets.Count(b => b.Points == 5);
+                    var correctOutcome = r.Bets.Count(b => b.Points >= 3);
                     return new StandingsRowDto(r.UserId, r.Username, pts, betsPlaced, exact, correctOutcome);
                 })
                 .OrderByDescending(s => s.Points)
