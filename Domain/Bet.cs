@@ -10,7 +10,6 @@ public class Bet
     public int? Points { get; set; }
     public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public Match Match { get; set; } = null!;
     public User User { get; set; } = null!;

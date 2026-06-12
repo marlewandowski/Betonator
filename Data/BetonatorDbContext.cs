@@ -80,8 +80,6 @@ public class BetonatorDbContext(DbContextOptions<BetonatorDbContext> options) : 
         b.Entity<Bet>(e =>
         {
             e.HasIndex(x => new { x.MatchId, x.UserId }).IsUnique();
-            // SQLite has no native rowversion; we maintain the token ourselves in SaveChanges.
-            e.Property(x => x.RowVersion).IsConcurrencyToken();
             e.HasOne(x => x.Match)
                 .WithMany(m => m.Bets)
                 .HasForeignKey(x => x.MatchId)
@@ -91,29 +89,5 @@ public class BetonatorDbContext(DbContextOptions<BetonatorDbContext> options) : 
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-    }
-
-    public override int SaveChanges()
-    {
-        BumpRowVersions();
-        return base.SaveChanges();
-    }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        BumpRowVersions();
-        return base.SaveChangesAsync(cancellationToken);
-    }
-
-    private void BumpRowVersions()
-    {
-        // SQLite doesn't generate rowversion automatically; assign a fresh token on insert/update.
-        foreach (var entry in ChangeTracker.Entries<Bet>())
-        {
-            if (entry.State is EntityState.Added or EntityState.Modified)
-            {
-                entry.Entity.RowVersion = BitConverter.GetBytes(DateTime.UtcNow.Ticks);
-            }
-        }
     }
 }
