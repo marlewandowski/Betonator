@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: betonator-postgres
+    environment:
+      POSTGRES_DB: betonator
+      POSTGRES_USER: betonator
+      POSTGRES_PASSWORD: betonator
+    ports:
+      - "5432:5432"
+    volumes:
+      - betonator-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  betonator-postgres-data:

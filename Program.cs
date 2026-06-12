@@ -8,22 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.AddOpenApi();
 
-var dataDir = "/app/data";
-Directory.CreateDirectory(dataDir);
-
-var dbPath = Path.Combine(dataDir, "betonator.db");
-var seedPath = Path.Combine(AppContext.BaseDirectory, "Data", "seed.db");
-
-if (!File.Exists(dbPath))
-{
-    if (!File.Exists(seedPath))
-        throw new Exception($"Seed DB not found at {seedPath}");
-
-    File.Copy(seedPath, dbPath);
-}
+var connectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("ConnectionStrings:Default is not configured.");
 
 builder.Services.AddDbContext<BetonatorDbContext>(opt =>
-    opt.UseSqlite($"Data Source={dbPath}"));
+    opt.UseNpgsql(connectionString));
 
 builder.Services.AddBetonatorAuth(builder.Configuration);
 builder.Services.AddSingleton<IScoringRule, ClassicPolishTyperRule>();
@@ -37,6 +26,8 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
+
+await DbInitializer.EnsureSeededAsync(app.Services);
 
 if (app.Environment.IsDevelopment())
 {
@@ -60,4 +51,3 @@ api.MapBetEndpoints();
 app.MapFallbackToFile("index.html");
 
 app.Run();
-
