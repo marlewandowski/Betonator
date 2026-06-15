@@ -246,7 +246,7 @@
   Zambia: "ZM",
   Zimbabwe: "ZW",
   Anglia: "EN",
-  Szkocja: "SC",
+  Szkocja: "SCOTLAND",
   Walia: "WL",
   "Irlandia Północna": "IP",
   Curacao: "CW"
