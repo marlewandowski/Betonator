@@ -133,7 +133,8 @@ public static class MatchEndpoints
 
             var uid = principal.UserId();
             var hasOwnBet = await db.Bets.AnyAsync(b => b.MatchId == id && b.UserId == uid);
-            if (!principal.IsAdmin() && !hasOwnBet)
+            var matchStarted = m.GameTime <= DateTime.UtcNow;
+            if (!principal.IsAdmin() && !hasOwnBet && !matchStarted)
             {
                 return Results.Json(
                     new { error = "Place your bet first to see other users' bets." },
