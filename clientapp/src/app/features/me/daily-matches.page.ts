@@ -16,6 +16,7 @@ import { TeamLogoComponent } from '../team-logo/team-logo';
 import { MatchBetsDialog } from '../competitions/match-bets.dialog';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
+import {TeamShortPipe} from '../../pipes/team-short-pipe';
 
 interface DailyMatchRow {
   competition: CompetitionDto;
@@ -37,7 +38,8 @@ interface DailyMatchRow {
     MatInputModule,
     TeamLogoComponent,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    TeamShortPipe
   ],
   template: `
     <div class="header-wrapper">
@@ -80,6 +82,7 @@ interface DailyMatchRow {
           <div
             class="match-card"
             [class.can-view-bets]="canViewBets(r)"
+            [class.no-result]="!hasResult(r)"
             [attr.role]="canViewBets(r) ? 'button' : null"
             [attr.tabindex]="canViewBets(r) ? 0 : null"
             (click)="openMatchBets(r)"
@@ -97,7 +100,10 @@ interface DailyMatchRow {
                   [teamName]="r.match.team1"
                   [isInternational]="r.competition.isInternational">
                 </app-team-logo>
-                <span class="team-name">{{ r.match.team1 }}</span>
+                <span class="team-name">
+                  <span class="team-name-full">{{ r.match.team1 }}</span>
+                  <span class="team-name-short">{{ r.match.team1 | teamShort }}</span>
+                </span>
               </div>
 
               <div class="vs">vs</div>
@@ -107,7 +113,10 @@ interface DailyMatchRow {
                   [teamName]="r.match.team2"
                   [isInternational]="r.competition.isInternational">
                 </app-team-logo>
-                <span class="team-name">{{ r.match.team2 }}</span>
+                <span class="team-name">
+                  <span class="team-name-full">{{ r.match.team2 }}</span>
+                  <span class="team-name-short">{{ r.match.team2 | teamShort }}</span>
+                </span>
               </div>
 
               @if (r.match.description) {
@@ -177,122 +186,185 @@ interface DailyMatchRow {
       gap: 1rem;
       flex-wrap: wrap;
     }
-
+    .actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .full { width: 100%; }
+    .muted { color: #666; }
     h1 {
       margin-bottom: 0.25rem;
     }
+    h2 { color: white; margin: 1.5rem 0 0.75rem; }
+    h4 { margin: 0.75rem 0 0.5rem; font-size: 0.9rem; text-transform: uppercase; opacity: 0.7; }
 
-    .muted {
-      color: #666;
-      margin: 0;
-    }
+    .bet, .bet-row { display: flex; align-items: center; gap: 0.4rem; }
+    .goal { width: 3rem; padding: 0.3rem 0.4rem; border: 1px solid #bbb; border-radius: 4px; text-align: center; }
+    .goal:disabled { background: #eee; color: #888; }
+    .chip { background: #1976d2; color: white; padding: 0.05rem 0.45rem; border-radius: 10px; font-size: 0.75rem; }
+    .pts { color: #2e7d32; font-weight: 600; }
 
-    .date-nav {
-      display: flex;
-      align-items: center;
-    }
+    .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1rem;    }
+    .group-card { container-type: inline-size; padding: 0.5rem; background-color: rgba(255, 255, 255, 0.9); min-width: 320px; }
+    .standings { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .standings th, .standings td { padding: 0.25rem 0.4rem; text-align: center; border-bottom: 1px solid #eee; }
+    .standings th:first-child, .standings td:first-child { text-align: left; }
 
-    .match-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    .bracket-card { container-type: inline-size; padding: 0.5rem; background-color: rgba(255, 255, 255, 0.9); }
+    .bracket-wrap { overflow-x: auto; padding-bottom: 1rem; position: relative; background-color: rgba(255, 255, 255, 0.9); }
+    .bracket-lines { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 0; }
+    .bracket-lines path { stroke: #90a4ae; stroke-width: 1.5; fill: none; }
+    .bracket { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(var(--cols), minmax(220px, 1fr)); gap: 2rem; min-width: 100%; }
+    .bracket-col { display: flex; flex-direction: column; gap: 1rem; }
+    .bracket-matches { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 1rem; }
+    .col-title { font-weight: 600; text-align: center; opacity: 0.8; margin-bottom: 0.25rem; }
     .match-card {
-      display: grid;
-      grid-template-columns:
-    84px
-    minmax(120px, 1fr)
-    minmax(44px, max-content)
-    max-content
-    minmax(24px, max-content);
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      background: white;
+      border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.6rem; background: #fafafa;
+      display: flex; flex-direction: column; gap: 0.3rem;
     }
+    .match-card .meta { font-size: 0.75rem; color: #777; }
+    .match-card .teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.4rem; }
+    .match-card .t { font-weight: 500; }
+    .match-card .score { font-weight: 600; color: #1976d2; }
+    .match-card .vs { font-size: 0.75rem; color: #888; margin: 2px 0 2px 24px; }
+    .match-card .admin { display: flex; justify-content: flex-end; }
 
+    .match-card-bracket {
+      border: 1px solid #ddd; border-radius: 6px; padding: 0.5rem 0.6rem; background: #fafafa;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .match-card-bracket .teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.4rem; }
+    .match-card-bracket .t { font-weight: 500; }
+    .match-card-bracket .score { font-weight: 600; color: #1976d2; }
+    .match-card-bracket .vs { display: flex; justify-content: center; font-size: 0.75rem; color: #888; }
+    .match-card-bracket .admin { display: flex; justify-content: flex-end; }
+    .match-card-bracket.can-view-bets,
     .match-card.can-view-bets {
       cursor: pointer;
     }
-
+    .match-card-bracket.can-view-bets:hover,
     .match-card.can-view-bets:hover {
       border-color: #90caf9;
       box-shadow: 0 2px 10px rgba(25, 118, 210, 0.12);
     }
 
-    .time {
+    .team-label { display: flex; justify-content: flex-start }
+    .team-name-short { display: none; }
+
+    .match-list {
       display: flex;
       flex-direction: column;
+      gap: 10px;
+      overflow-x: auto;
+    }
+
+    .match-card {
+      display: grid;
+      container: match-card / inline-size;
+
+      grid-template-columns:
+    40px
+    minmax(120px, 1fr)
+    minmax(44px, max-content)
+    max-content
+    minmax(24px, max-content);
+
+      gap: 12px;
+
+      align-items: center;
+
+      padding: 12px;
+      border-radius: 12px;
+
+      border: 1px solid #e5e5e5;
+      background: white;
+    }
+
+    /* TIME */
+
+    .time {
+      font-size: 12px;
       color: #666;
-      font-size: 13px;
+
+      display: flex;
+      flex-direction: column;
       line-height: 1.2;
     }
 
     .time small {
       color: #999;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
+
+    /* TEAMS */
 
     .teams {
       min-width: 0;
-      display: flex;
     }
 
     .team-row {
       display: flex;
       align-items: center;
       gap: 6px;
+
       min-width: 0;
     }
 
+    //.team-name {
+    //  overflow: hidden;
+    //  text-overflow: ellipsis;
+    //  white-space: nowrap;
+    //}
+
     .team-name {
+      min-width: 0;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .vs {
-      color: #888;
-      font-size: 0.75rem;
-      margin: 0 6px 0 6px;
+    .team-name-full {
+      display: none;
+    }
+
+    .team-name-short {
+      display: inline;
+    }
+
+    @container match-card (min-width: 560px) {
+      .team-name-full {
+        display: inline;
+      }
+
+      .team-name-short {
+        display: none;
+      }
     }
 
     .description {
       display: block;
+
       margin-top: 4px;
+
       color: #777;
       font-size: 11px;
     }
+
+    /* RESULT */
 
     .result {
       text-align: center;
       font-size: 13px;
     }
 
+    .locked,
+    .scheduled {
+      color: #777;
+      font-style: italic;
+    }
+
+    /* BET */
+
     .bet {
       display: flex;
       align-items: center;
       gap: 4px;
       min-width: max-content;
-    }
-
-    .goal {
-      width: 30px;
-      height: 28px;
-      padding: 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    .goal:disabled {
-      background: #eee;
-      color: #888;
     }
 
     .bet-save-button {
@@ -303,34 +375,118 @@ interface DailyMatchRow {
     }
 
     .bet-save-button mat-icon {
-      width: 20px;
-      height: 20px;
       font-size: 20px;
+      height: 20px;
+      width: 20px;
     }
 
-    .chip {
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #f2f2f2;
-      font-size: 10px;
+    .goal {
+      width: 30px;
+      height: 28px;
+
+      border: 1px solid #ccc;
+      border-radius: 6px;
+
+      text-align: center;
+
+      padding: 0;
     }
+
+    /* POINTS */
 
     .points {
       text-align: center;
       font-size: 14px;
     }
 
-    @media (max-width: 900px) {
+    /* CHIP */
+
+    .chip {
+      padding: 2px 6px;
+
+      border-radius: 999px;
+
+      background: #f2f2f2;
+
+      font-size: 10px;
+    }
+
+    /* ACTIONS */
+
+    .match-card .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end; /* or flex-start / space-between */
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    @container (max-width: 430px) {
+      .team-name-full { display: none; }
+      .team-name-short { display: inline; }
       .match-card {
-        grid-template-columns: 64px minmax(0, 1fr);
-        grid-template-areas:
-      "time teams"
-      "result bet"
-      "points bet";
+        grid-template-columns:
+      44px
+      minmax(28px, 1fr)
+      minmax(36px, max-content)
+      max-content
+      minmax(20px, max-content);
+
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .match-card .vs { font-size: 0.75rem; color: #888; margin: 0}
+
+      .goal {
+        width: 28px;
+      }
+
+      .bet-save-button {
+        width: 30px;
+        height: 30px;
+      }
+
+      .bet .chip {
+        display: none;
+      }
+
+      .team-row {
+        justify-content: center;
+      }
+
+      .description {
+        display: none;
       }
 
       .time {
-        grid-area: time;
+        font-size: 11px;
+      }
+
+      .result {
+        font-size: 12px;
+      }
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 900px) {
+
+      .match-card {
+        grid-template-columns: minmax(0, 1fr) 40px 80px;
+        grid-template-areas: "teams bet result";
+        gap: 10px;
+      }
+
+      .match-card.no-result {
+        grid-template-columns: minmax(0,1fr) 40px 80px;
+        grid-template-areas: "teams bet result";
+        gap: 10px;
+      }
+
+      .time {
+        display: none
+
       }
 
       .teams {
@@ -339,17 +495,22 @@ interface DailyMatchRow {
 
       .result {
         grid-area: result;
-        text-align: left;
       }
 
       .bet {
         grid-area: bet;
-        justify-content: flex-start;
+        justify-content: center;
       }
 
       .points {
-        grid-area: points;
-        text-align: left;
+        display: none;
+      }
+
+      .match-card .actions {
+        grid-area: actions;
+
+        flex-direction: row;
+        justify-content: flex-end;
       }
     }
   `],
@@ -433,6 +594,10 @@ export class DailyMatchesPage implements OnInit {
 
   canViewBets(r: DailyMatchRow): boolean {
     return r.match.myBet !== null;
+  }
+
+  hasResult(r:DailyMatchRow): boolean {
+    return r.match.goal1 != null && r.match.goal2 != null;
   }
 
   isBetReadOnly(r: DailyMatchRow): boolean {

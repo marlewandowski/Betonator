@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <Folder Include="clientapp\src\app\common\" />
+      <Folder Include="clientapp\src\app\pipes\" />
     </ItemGroup>
 
     <Target Name="BuildClient" AfterTargets="Publish">

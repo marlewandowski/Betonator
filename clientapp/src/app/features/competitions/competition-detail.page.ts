@@ -28,6 +28,7 @@ import { SetResultDialog } from './set-result.dialog';
 import { ManageGroupsDialog } from './manage-groups.dialog';
 import {TeamLogoComponent} from '../team-logo/team-logo';
 import { MatchBetsDialog } from './match-bets.dialog';
+import {TeamShortPipe} from '../../pipes/team-short-pipe';
 
 interface MatchRow {
   match: MatchDto;
@@ -44,7 +45,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     DatePipe, NgTemplateOutlet, FormsModule, RouterLink,
     MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatIconModule, MatCardModule, MatChipsModule, MatDialogModule, MatExpansionModule,
-    TeamLogoComponent
+    TeamLogoComponent, TeamShortPipe
   ],
   template: `
     <div class="header-wrapper">
@@ -206,6 +207,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
           <div
             class="match-card"
             [class.can-view-bets]="canViewBets(r)"
+            [class.no-result]="!hasResult(r)"
             [attr.role]="canViewBets(r) ? 'button' : null"
             [attr.tabindex]="canViewBets(r) ? 0 : null"
             (click)="openMatchBets(r)"
@@ -228,8 +230,9 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
                 </app-team-logo>
 
                 <span class="team-name">
-              {{ r.match.team1 }}
-            </span>
+                  <span class="team-name-full">{{ r.match.team1 }}</span>
+                  <span class="team-name-short">{{ r.match.team1 | teamShort }}</span>
+                </span>
               </div>
 
               <div class="vs">vs</div>
@@ -241,8 +244,9 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
                 </app-team-logo>
 
                 <span class="team-name">
-              {{ r.match.team2 }}
-            </span>
+                  <span class="team-name-full">{{ r.match.team2}}</span>
+                  <span class="team-name-short">{{ r.match.team2 | teamShort }}</span>
+                </span>
               </div>
 
               @if (r.match.description) {
@@ -287,7 +291,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
                 (click)="$event.stopPropagation()"
               />
 
-              @if (!r.match.myBet) {
+              @if (!r.match.myBet && !isBetReadOnly(r)) {
                 <button
                   mat-icon-button
                   class="bet-save-button"
@@ -385,15 +389,18 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     }
 
     .team-label { display: flex; justify-content: flex-start }
+    .team-name-short { display: none; }
 
     .match-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow-x: auto;
     }
 
     .match-card {
       display: grid;
+      container: match-card / inline-size;
 
       grid-template-columns:
     40px
@@ -443,9 +450,27 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     }
 
     .team-name {
+      min-width: 0;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .team-name-full {
+      display: none;
+    }
+
+    .team-name-short {
+      display: inline;
+    }
+
+    @container match-card (min-width: 560px) {
+      .team-name-full {
+        display: inline;
+      }
+
+      .team-name-short {
+        display: none;
+      }
     }
 
     .description {
@@ -534,6 +559,8 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     }
 
     @container (max-width: 430px) {
+      .team-name-full { display: none; }
+      .team-name-short { display: inline; }
       .match-card {
         grid-template-columns:
       44px
@@ -565,7 +592,6 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
         justify-content: center;
       }
 
-      .team-name,
       .description {
         display: none;
       }
@@ -584,13 +610,19 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     @media (max-width: 900px) {
 
       .match-card {
-        grid-template-columns: 40px minmax(0, 1fr) 40px 80px 40px;
-        grid-template-areas: "time teams result bet points";
+        grid-template-columns: minmax(0, 1fr) 40px 80px;
+        grid-template-areas: "teams bet result";
+        gap: 10px;
+      }
+
+      .match-card.no-result {
+        grid-template-columns: minmax(0,1fr) 40px 80px;
+        grid-template-areas: "teams bet result";
         gap: 10px;
       }
 
       .time {
-        grid-area: time;
+        display: none
 
       }
 
@@ -608,7 +640,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
       }
 
       .points {
-        grid-area: points;
+        display: none;
       }
 
       .match-card .actions {
@@ -796,6 +828,10 @@ export class CompetitionDetailPage implements OnInit, AfterViewInit {
 
   canViewBets(r: MatchRow): boolean {
     return r.match.myBet !== null || this.toLocalInput(new Date(Date.now())) > this.toLocalInput(new Date(r.match.gameTime)) ;
+  }
+
+  hasResult(r:MatchRow): boolean {
+    return r.match.goal1 != null && r.match.goal2 != null;
   }
 
   isBetReadOnly(r: MatchRow): boolean {
