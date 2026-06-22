@@ -151,7 +151,7 @@ interface DailyMatchRow {
                 [disabled]="isBetReadOnly(r)"
                 (click)="$event.stopPropagation()" />
 
-              @if (!r.match.myBet) {
+              @if (!r.match.myBet && !isBetReadOnly(r)) {
                 <button
                   mat-icon-button
                   class="bet-save-button"
