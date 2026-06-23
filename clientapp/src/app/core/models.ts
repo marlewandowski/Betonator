@@ -54,8 +54,8 @@ export const MatchStage = {
 export function stageLabel(s: MatchStage | null | undefined): string {
   switch (s) {
     case 0: return 'Grupa';
-    case 1: return '1/32 finału';
-    case 2: return '1/16 finału';
+    case 1: return '1/16 finału';
+    case 2: return '1/8 finału';
     case 3: return 'Ćwierćfinał';
     case 4: return 'Półfinał';
     case 5: return 'Mecz o 3. miejsce';
