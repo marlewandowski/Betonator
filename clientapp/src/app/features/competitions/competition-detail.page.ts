@@ -64,6 +64,94 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
 
     @if (loading()) { <p>Ładowanie…</p> }
 
+    @if (bracketStages().length > 0 && groupStageFinished()) {
+      <h2>Drabinka</h2>
+      <mat-card class="bracket-card">
+        <div class="bracket-wrap" #bracketWrap>
+          <svg class="bracket-lines" [attr.width]="bracketSize().w" [attr.height]="bracketSize().h">
+            @for (l of bracketLines(); track $index) {
+              <path [attr.d]="lineD(l)" />
+            }
+          </svg>
+          <div class="bracket" [style.--cols]="bracketStages().length">
+            @for (col of bracketStages(); track col.stage) {
+              <div class="bracket-col">
+                <div class="col-title">{{ stageLabel(col.stage) }}</div>
+                <div class="bracket-matches">
+                  @for (r of col.rows; track r.match.id) {
+                    <div class="match-card-bracket"
+                         [class.can-view-bets]="canViewBets(r)"
+                         [attr.data-id]="r.match.id"
+                         [attr.data-feeder1]="r.match.feederMatch1Id"
+                         [attr.data-feeder2]="r.match.feederMatch2Id"
+                         [attr.role]="canViewBets(r) ? 'button' : null"
+                         [attr.tabindex]="canViewBets(r) ? 0 : null"
+                         (click)="openMatchBets(r)"
+                         (keydown.enter)="openMatchBets(r)"
+                         (keydown.space)="openMatchBets(r)">
+                      <div class="meta">
+                        {{ r.match.gameTime | date:'MMM d HH:mm':'Europe/Warsaw' }}
+                        @if (r.match.description) { · {{ r.match.description }} }
+                      </div>
+                      <div class="teams">
+                    <span class="t">
+                      <div class="team-label">
+                        <app-team-logo [teamName]="r.match.team1" [isInternational]="competition()?.isInternational ?? false"></app-team-logo>
+                        {{ r.match.team1 | teamShort }}
+                      </div>
+                    </span>
+
+                        @if (r.match.goal1 !== null && r.match.goal2 !== null) {
+                          <span class="score">{{ r.match.goal1 }} - {{ r.match.goal2 }}</span>
+                        } @else {
+                          <span class="vs">vs</span>
+                        }
+                        <span class="t">
+                      <div class="team-label">
+                        <app-team-logo [teamName]="r.match.team2" [isInternational]="competition()?.isInternational ?? false"></app-team-logo>
+                        {{ r.match.team2 | teamShort }}
+                      </div>
+                    </span>
+                      </div>
+                      <div class="bet-row">
+                        <input type="number" min="0" max="99" class="goal" [(ngModel)]="r.goal1"
+                               [disabled]="isBetReadOnly(r)"
+                               (click)="$event.stopPropagation()" />
+                        :
+                        <input type="number" min="0" max="99" class="goal" [(ngModel)]="r.goal2"
+                               [disabled]="isBetReadOnly(r)"
+                               (click)="$event.stopPropagation()" />
+                        @if (!r.match.myBet) {
+                          <button
+                            mat-icon-button
+                            class="bet-save-button"
+                            color="primary"
+                            aria-label="Zapisz typ"
+                            (click)="$event.stopPropagation(); save(r)"
+                            [disabled]="r.match.isLocked || r.saving">
+                            <mat-icon>save</mat-icon>
+                          </button>
+                        }
+                        @if (r.match.myBet?.points !== null && r.match.myBet?.points !== undefined) {
+                          <span class="pts">{{ r.match.myBet?.points }} pt</span>
+                        }
+                      </div>
+                      @if (auth.isAdmin()) {
+                        <div class="admin" (click)="$event.stopPropagation()">
+                          <button mat-button (click)="editMatch(r.match)">Edytuj</button>
+                          <button mat-button color="primary" (click)="setResult(r.match)">Wynik</button>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-card>
+    }
+
     @if (groupRows().length > 0) {
       <h2>Faza grupowa</h2>
       <div class="groups">
@@ -101,94 +189,6 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
           </mat-card>
         }
       </div>
-    }
-
-    @if (bracketStages().length > 0) {
-      <h2>Drabinka</h2>
-      <mat-card class="bracket-card">
-        <div class="bracket-wrap" #bracketWrap>
-        <svg class="bracket-lines" [attr.width]="bracketSize().w" [attr.height]="bracketSize().h">
-          @for (l of bracketLines(); track $index) {
-            <path [attr.d]="lineD(l)" />
-          }
-        </svg>
-        <div class="bracket" [style.--cols]="bracketStages().length">
-          @for (col of bracketStages(); track col.stage) {
-            <div class="bracket-col">
-              <div class="col-title">{{ stageLabel(col.stage) }}</div>
-              <div class="bracket-matches">
-              @for (r of col.rows; track r.match.id) {
-                <div class="match-card-bracket"
-                     [class.can-view-bets]="canViewBets(r)"
-                     [attr.data-id]="r.match.id"
-                     [attr.data-feeder1]="r.match.feederMatch1Id"
-                     [attr.data-feeder2]="r.match.feederMatch2Id"
-                     [attr.role]="canViewBets(r) ? 'button' : null"
-                     [attr.tabindex]="canViewBets(r) ? 0 : null"
-                     (click)="openMatchBets(r)"
-                     (keydown.enter)="openMatchBets(r)"
-                     (keydown.space)="openMatchBets(r)">
-                  <div class="meta">
-                    {{ r.match.gameTime | date:'MMM d HH:mm':'Europe/Warsaw' }}
-                    @if (r.match.description) { · {{ r.match.description }} }
-                  </div>
-                  <div class="teams">
-                    <span class="t">
-                      <div class="team-label">
-                        <app-team-logo [teamName]="r.match.team1" [isInternational]="competition()?.isInternational ?? false"></app-team-logo>
-                        {{ r.match.team1 }}
-                      </div>
-                    </span>
-
-                    @if (r.match.goal1 !== null && r.match.goal2 !== null) {
-                      <span class="score">{{ r.match.goal1 }} - {{ r.match.goal2 }}</span>
-                    } @else {
-                      <span class="vs">vs</span>
-                    }
-                    <span class="t">
-                      <div class="team-label">
-                        <app-team-logo [teamName]="r.match.team2" [isInternational]="competition()?.isInternational ?? false"></app-team-logo>
-                        {{ r.match.team2 }}
-                      </div>
-                    </span>
-                  </div>
-                  <div class="bet-row">
-                    <input type="number" min="0" max="99" class="goal" [(ngModel)]="r.goal1"
-                           [disabled]="isBetReadOnly(r)"
-                           (click)="$event.stopPropagation()" />
-                    :
-                    <input type="number" min="0" max="99" class="goal" [(ngModel)]="r.goal2"
-                           [disabled]="isBetReadOnly(r)"
-                           (click)="$event.stopPropagation()" />
-                    @if (!r.match.myBet) {
-                      <button
-                        mat-icon-button
-                        class="bet-save-button"
-                        color="primary"
-                        aria-label="Zapisz typ"
-                        (click)="$event.stopPropagation(); save(r)"
-                        [disabled]="r.match.isLocked || r.saving">
-                        <mat-icon>save</mat-icon>
-                      </button>
-                    }
-                    @if (r.match.myBet?.points !== null && r.match.myBet?.points !== undefined) {
-                      <span class="pts">{{ r.match.myBet?.points }} pt</span>
-                    }
-                  </div>
-                  @if (auth.isAdmin()) {
-                    <div class="admin" (click)="$event.stopPropagation()">
-                      <button mat-button (click)="editMatch(r.match)">Edytuj</button>
-                      <button mat-button color="primary" (click)="setResult(r.match)">Wynik</button>
-                    </div>
-                  }
-                </div>
-              }
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      </mat-card>
     }
 
     @if (standaloneRows().length > 0) {
@@ -351,7 +351,7 @@ interface BracketLine { x1: number; y1: number; x2: number; y2: number; }
     .standings th:first-child, .standings td:first-child { text-align: left; }
 
     .bracket-card { container-type: inline-size; padding: 0.5rem; background-color: rgba(255, 255, 255, 0.9); }
-    .bracket-wrap { overflow-x: auto; padding-bottom: 1rem; position: relative; background-color: rgba(255, 255, 255, 0.9); }
+    .bracket-wrap { overflow-x: auto; padding-bottom: 1rem; position: relative; }
     .bracket-lines { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 0; }
     .bracket-lines path { stroke: #90a4ae; stroke-width: 1.5; fill: none; }
     .bracket { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(var(--cols), minmax(220px, 1fr)); gap: 2rem; min-width: 100%; }
@@ -667,6 +667,14 @@ export class CompetitionDetailPage implements OnInit, AfterViewInit {
   competition = signal<CompetitionDto | null>(null);
   groups = signal<GroupDto[]>([]);
   groupStandings = signal<GroupStandingsDto[]>([]);
+  groupStageFinished = computed(() =>
+    this.rows()
+      .filter(row => row.match.stage === MatchStage.Group)
+      .every(row =>
+        row.match.goal1 != null &&
+        row.match.goal2 != null
+      )
+  );
   rows = signal<MatchRow[]>([]);
   loading = signal(true);
   cols = ['time', 'teams', 'result', 'bet', 'points', 'actions'];
@@ -786,6 +794,10 @@ export class CompetitionDetailPage implements OnInit, AfterViewInit {
       next: matches => {
         this.rows.set(matches.map(m => this.toRow(m)));
         this.loading.set(false);
+
+        const count = signal(5);
+
+        const doubled = computed(() => count() * 2);
       },
       error: () => this.loading.set(false),
     });
