@@ -23,9 +23,9 @@ export class CompetitionsApi {
     return this.http.post<ParticipantDto>(`${environment.apiUrl}/api/competitions/${id}/participants`, { userId, isActive });
   }
   removeParticipant(id: number, userId: number) {
-    return this.http.delete<void>(`/api/competitions/${id}/participants/${userId}`);
+    return this.http.delete<void>(`${environment.apiUrl}/api/competitions/${id}/participants/${userId}`);
   }
   standings(id: number) {
-    return this.http.get<StandingsRowDto[]>(`/api/competitions/${id}/standings`);
+    return this.http.get<StandingsRowDto[]>(`${environment.apiUrl}/api/competitions/${id}/standings`);
   }
 }

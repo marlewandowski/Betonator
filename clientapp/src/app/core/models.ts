@@ -87,9 +87,11 @@ export interface StandingsRowDto {
   userId: number;
   username: string;
   points: number;
+  pointsPlayoffs: number;
   betsPlaced: number;
   exactScores: number;
   correctOutcomes: number;
+  correctGoalsOneSide: number;
 }
 
 export interface GroupDto {

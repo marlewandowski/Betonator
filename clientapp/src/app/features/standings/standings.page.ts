@@ -33,6 +33,10 @@ import { StandingsRowDto } from '../../core/models';
           <th mat-header-cell *matHeaderCellDef>Punkty</th>
           <td mat-cell *matCellDef="let r" data-label="Punkty"><strong>{{ r.points }}</strong></td>
         </ng-container>
+        <ng-container matColumnDef="pointsPlayoff">
+          <th mat-header-cell *matHeaderCellDef>Playoff</th>
+          <td mat-cell *matCellDef="let r" data-label="Playoff"><strong>{{ r.userId == 3 ? 'nie zapłacono' : r.pointsPlayoff }}</strong></td>
+        </ng-container>
         <ng-container matColumnDef="bets">
           <th mat-header-cell *matHeaderCellDef>Typy</th>
           <td mat-cell *matCellDef="let r" data-label="Typy">{{ r.betsPlaced }}</td>
@@ -44,6 +48,10 @@ import { StandingsRowDto } from '../../core/models';
         <ng-container matColumnDef="correct">
           <th mat-header-cell *matHeaderCellDef>Trafiony wynik</th>
           <td mat-cell *matCellDef="let r" data-label="Trafiony wynik">{{ r.correctOutcomes }}</td>
+        </ng-container>
+        <ng-container matColumnDef="correctGoals">
+          <th mat-header-cell *matHeaderCellDef>Bonus za gole</th>
+          <td mat-cell *matCellDef="let r" data-label="Bonus za gole(+1)">{{ r.correctGoalsOneSide }}</td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="cols"></tr>
         <tr mat-row *matRowDef="let row; columns: cols;"></tr>
@@ -61,7 +69,7 @@ export class StandingsPage implements OnInit {
 
   rows = signal<StandingsRowDto[]>([]);
   loading = signal(true);
-  cols = ['rank', 'username', 'points', 'bets', 'exact', 'correct'];
+  cols = ['rank', 'username', 'points','pointsPlayoff', 'bets', 'exact', 'correct','correctGoals'];
 
   ngOnInit() {
     this.api.standings(+this.id).subscribe({

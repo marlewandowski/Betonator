@@ -4,6 +4,8 @@ public record StandingsRowDto(
     int UserId,
     string Username,
     int Points,
+    int PointsPlayoff,
     int BetsPlaced,
     int ExactScores,
-    int CorrectOutcomes);
+    int CorrectOutcomes,
+    int CorrectGoalsOneSide);

@@ -116,32 +116,54 @@ public static class CompetitionEndpoints
             var compExists = await db.Competitions.AnyAsync(c => c.Id == id);
             if (!compExists) return Results.NotFound();
 
-            var rows = await db.CompetitionParticipants
+            var standings = await db.CompetitionParticipants
                 .Where(p => p.CompetitionId == id)
                 .Select(p => new
                 {
                     p.UserId,
-                    p.User.Username,
-                    p.IsActive,
-                    Bets = p.User.Bets.Where(b => b.Match.CompetitionId == id).ToList(),
+                    Username = p.User.Username,
+
+                    Points = p.User.Bets
+                        .Where(b => b.Match.CompetitionId == id)
+                        .Sum(b => b.Points ?? 0),
+
+                    PointsPlayoff = p.User.Bets
+                        .Where(b => b.Match.CompetitionId == id &&
+                                    b.Match.Stage != MatchStage.Group)
+                        .Sum(b => b.Points ?? 0),
+
+                    BetsPlaced = p.User.Bets
+                        .Count(b => b.Match.CompetitionId == id),
+
+                    ExactScores = p.User.Bets
+                        .Count(b => b.Match.CompetitionId == id &&
+                                    b.Points == 5),
+
+                    CorrectOutcomes = p.User.Bets
+                        .Count(b => b.Match.CompetitionId == id &&
+                                    b.Points >= 3),
+                    CorrectGoalsOneSide = p.User.Bets
+                        .Count(b => b.Match.CompetitionId == id &&
+                                    b.Points == 4)
                 })
+                .OrderByDescending(x => x.Points)
+                .ThenByDescending(x => x.ExactScores)
+                .ThenBy(x => x.Username)
                 .ToListAsync();
 
-            var standings = rows
-                .Select(r =>
-                {
-                    var pts = r.Bets.Sum(b => b.Points ?? 0);
-                    var betsPlaced = r.Bets.Count;
-                    var exact = r.Bets.Count(b => b.Points == 5);
-                    var correctOutcome = r.Bets.Count(b => b.Points >= 3);
-                    return new StandingsRowDto(r.UserId, r.Username, pts, betsPlaced, exact, correctOutcome);
-                })
-                .OrderByDescending(s => s.Points)
-                .ThenByDescending(s => s.ExactScores)
-                .ThenBy(s => s.Username)
+            List<StandingsRowDto> result = standings
+                .Select(x => new StandingsRowDto(
+                    x.UserId,
+                    x.Username,
+                    x.Points,
+                    x.PointsPlayoff,
+                    x.BetsPlaced,
+                    x.ExactScores,
+                    x.CorrectOutcomes,
+                    x.CorrectGoalsOneSide))
                 .ToList();
-
-            return Results.Ok(standings);
+            
+            return Results.Ok(result);
         }).RequireAuthorization();
 
         return app;
