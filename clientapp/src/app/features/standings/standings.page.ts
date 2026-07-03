@@ -35,7 +35,7 @@ import { StandingsRowDto } from '../../core/models';
         </ng-container>
         <ng-container matColumnDef="pointsPlayoff">
           <th mat-header-cell *matHeaderCellDef>Playoff</th>
-          <td mat-cell *matCellDef="let r" data-label="Playoff"><strong>{{ r.userId == 3 ? 'nie zapłacono' : r.pointsPlayoff }}</strong></td>
+          <td mat-cell *matCellDef="let r" data-label="Playoff"><strong>{{ r.pointsPlayoff }}</strong></td>
         </ng-container>
         <ng-container matColumnDef="bets">
           <th mat-header-cell *matHeaderCellDef>Typy</th>
